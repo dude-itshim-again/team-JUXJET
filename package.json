@@ -1,0 +1,14 @@
+{
+  "name": "ssssiiiiiihhh-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix SSSSIiIIIIHHH run dev",
+    "build": "npm --prefix SSSSIiIIIIHHH run build",
+    "lint": "npm --prefix SSSSIiIIIIHHH run lint",
+    "preview": "npm --prefix SSSSIiIIIIHHH run preview",
+    "backend:dev": "npm --prefix backend run start:dev",
+    "backend:build": "npm --prefix backend run build",
+    "backend:start": "npm --prefix backend run start:prod"
+  }
+}
