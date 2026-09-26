@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import {
   Bell,
@@ -19,6 +19,31 @@ export const Navbar: React.FC = () => {
   const [notifOpen, setNotifOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // On login and verify-otp authentication pages, do not show the navbar
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/verify-otp';
+  if (isAuthPage) {
+    return null;
+  }
+
+  // Check if current portal is College (University), Government, or CSR / Industry
+  const isCollegePortal =
+    location.pathname.startsWith('/university') ||
+    location.pathname.startsWith('/universities');
+  const isGovernmentPortal = location.pathname.startsWith('/government');
+  const isCsrPortal =
+    location.pathname.startsWith('/partners') ||
+    location.pathname.startsWith('/industry');
+
+  const isOtherThreePortals = isCollegePortal || isGovernmentPortal || isCsrPortal;
+  const isCitizenPortal = location.pathname.startsWith('/citizen');
+
+  // Submit Challenge button is ALWAYS kept in citizen dashboard and workspace,
+  // but REMOVED in the other three dashboards (University, Government, CSR).
+  // On public pages, shown for citizens and guests, hidden if logged in as other three roles.
+  const isNonCitizenRole = currentUser && currentUser.role !== 'citizen';
+  const canSubmitChallenge = isCitizenPortal || (!isOtherThreePortals && !isNonCitizenRole);
 
   const unreadCount = notifications.filter(n => !n.read && (currentRole === 'public' || n.recipientRole === currentRole)).length;
   const filteredNotifications = notifications.filter(n => currentRole === 'public' || n.recipientRole === currentRole);
@@ -39,72 +64,77 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
-      {/* Main Navbar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Brand Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-lg bg-navy-700 flex items-center justify-center text-white shadow-md group-hover:bg-navy-800 transition-colors">
-              <svg className="w-6 h-6 text-saffron-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
-                <line x1="4" y1="22" x2="4" y2="15"></line>
-              </svg>
-            </div>
-            <div>
-              <span className="text-xl font-bold tracking-tight text-navy-700 flex items-center gap-1.5">
-                Jan<span className="text-teal-600">Setu</span>
-              </span>
-              <p className="text-[10px] text-slate-500 font-medium tracking-wide -mt-1 hidden sm:block">
-                From Challenges to Scalable Solutions
-              </p>
-            </div>
-          </Link>
+    <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-xs">
+      {/* Main Navbar: Use full available width with responsive padding */}
+      <div className="w-full px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between lg:grid lg:grid-cols-[auto_1fr_auto] 2xl:grid-cols-[1fr_auto_1fr] h-16 gap-2 sm:gap-3 lg:gap-5">
+          {/* Brand Logo (Left) */}
+          <div className="flex items-center justify-start shrink-0 pr-3 lg:pr-5">
+            <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-navy-700 flex items-center justify-center text-white shadow-md group-hover:bg-navy-800 transition-colors shrink-0">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6 text-saffron-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1z"></path>
+                  <line x1="4" y1="22" x2="4" y2="15"></line>
+                </svg>
+              </div>
+              <div className="shrink-0">
+                <span className="text-lg sm:text-xl font-bold tracking-tight text-navy-700 flex items-center gap-1">
+                  Jan<span className="text-teal-600">Setu</span>
+                </span>
+                <p className="text-[10px] text-slate-500 font-medium tracking-wide -mt-1 hidden sm:block">
+                  From Challenges to Scalable Solutions
+                </p>
+              </div>
+            </Link>
+          </div>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden xl:flex flex-1 justify-center items-center gap-4 2xl:gap-6 text-sm font-medium text-slate-600">
-            <Link to="/" className="hover:text-navy-700 transition-colors">
+          {/* Desktop Navigation Links (Center, True Grid-Centered with Proportional Spacing) */}
+          <nav className="hidden lg:flex items-center justify-center gap-0.5 xl:gap-1.5 2xl:gap-3 text-xs 2xl:text-sm font-medium text-slate-600 px-1 lg:px-3 min-w-0">
+            <Link to="/" className="hover:text-navy-700 transition-colors whitespace-nowrap py-1.5 px-2 rounded-md hover:bg-slate-100/70">
               Home
             </Link>
-            <Link to="/explore" className="hover:text-navy-700 transition-colors">
-              Explore Challenges
+            <Link to="/explore" className="hover:text-navy-700 transition-colors whitespace-nowrap py-1.5 px-2 rounded-md hover:bg-slate-100/70">
+              <span className="hidden 2xl:inline">Explore Challenges</span>
+              <span className="2xl:hidden inline">Explore</span>
             </Link>
             <Link
               to="/university/dashboard"
-              className="text-purple-700 hover:text-purple-900 font-semibold transition-colors flex items-center gap-1.5"
+              className="text-purple-700 hover:text-purple-900 font-semibold transition-colors flex items-center gap-1 whitespace-nowrap py-1.5 px-2 rounded-md hover:bg-purple-50"
             >
-              <span>Lab Dashboard</span>
-              <span className="text-[10px] bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded-full font-bold border border-purple-200">
+              <span className="hidden 2xl:inline">Lab Dashboard</span>
+              <span className="2xl:hidden inline">Lab R&D</span>
+              <span className="hidden 2xl:inline text-[10px] bg-purple-100 text-purple-800 px-1.5 py-0.2 rounded-full font-bold border border-purple-200">
                 R&D
               </span>
             </Link>
-            <Link to="/universities" className="hover:text-navy-700 transition-colors">
+            <Link to="/universities" className="hover:text-navy-700 transition-colors whitespace-nowrap py-1.5 px-2 rounded-md hover:bg-slate-100/70">
               Universities
             </Link>
-            <Link to="/industry" className="hover:text-navy-700 transition-colors">
-              Industry Partners
+            <Link to="/industry" className="hover:text-navy-700 transition-colors whitespace-nowrap py-1.5 px-2 rounded-md hover:bg-slate-100/70">
+              <span className="hidden 2xl:inline">Industry Partners</span>
+              <span className="2xl:hidden inline">Industry</span>
             </Link>
-            <Link to="/projects/PROJ-2026-001" className="hover:text-navy-700 transition-colors">
-              Projects Lifecycle
+            <Link to="/projects/PROJ-2026-001" className="hover:text-navy-700 transition-colors whitespace-nowrap py-1.5 px-2 rounded-md hover:bg-slate-100/70">
+              Projects
             </Link>
-            <Link to="/impact" className="hover:text-navy-700 transition-colors">
+            <Link to="/impact" className="hover:text-navy-700 transition-colors whitespace-nowrap py-1.5 px-2 rounded-md hover:bg-slate-100/70">
               Impact
             </Link>
-            <Link to="/about" className="hover:text-navy-700 transition-colors">
+            <Link to="/about" className="hover:text-navy-700 transition-colors whitespace-nowrap py-1.5 px-2 rounded-md hover:bg-slate-100/70">
               About
             </Link>
           </nav>
 
-          {/* Actions & User State */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            {/* Submit Challenge CTA for authenticated users */}
-            {currentUser && (
+          {/* Actions & User State (Right) */}
+          <div className="flex items-center justify-end gap-2 sm:gap-2.5 shrink-0 pl-3 lg:pl-5">
+            {/* Submit Challenge CTA: kept in citizen dashboard/portal, removed in other three dashboards */}
+            {canSubmitChallenge && (
               <Link
                 to="/citizen/submit"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-saffron-500 hover:bg-saffron-600 text-slate-900 shadow-sm transition-all"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-saffron-500 hover:bg-saffron-600 text-slate-950 shadow-xs hover:shadow transition-all whitespace-nowrap shrink-0"
               >
-                <PlusCircle className="w-4 h-4" />
-                Submit Challenge
+                <PlusCircle className="w-3.5 h-3.5 shrink-0" />
+                <span>Submit Challenge</span>
               </Link>
             )}
 
@@ -239,7 +269,7 @@ export const Navbar: React.FC = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="xl:hidden p-2 text-slate-600 hover:text-navy-700 hover:bg-slate-100 rounded-lg"
+              className="lg:hidden p-2 text-slate-600 hover:text-navy-700 hover:bg-slate-100 rounded-lg"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -249,7 +279,7 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Dropdown Nav */}
       {mobileMenuOpen && (
-        <div className="xl:hidden bg-white border-b border-slate-200 px-4 pt-2 pb-4 space-y-2">
+        <div className="lg:hidden bg-white border-b border-slate-200 px-4 pt-2 pb-4 space-y-2">
           <Link
             to="/"
             onClick={() => setMobileMenuOpen(false)}
@@ -307,7 +337,7 @@ export const Navbar: React.FC = () => {
           >
             About
           </Link>
-          {currentUser && (
+          {canSubmitChallenge && (
             <Link
               to="/citizen/submit"
               onClick={() => setMobileMenuOpen(false)}

@@ -172,6 +172,9 @@ export interface Challenge {
   sdg_target?: number;
   extracted_skills?: string[];
   complaintNumber?: string;
+  backendId?: string;
+  fundingStatus?: string;
+  industryPartner?: any;
 }
 
 export interface UniversityMatch {

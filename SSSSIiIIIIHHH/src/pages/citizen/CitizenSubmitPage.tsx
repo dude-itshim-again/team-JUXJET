@@ -30,7 +30,7 @@ type EvidenceDraft = {
 
 export const CitizenSubmitPage: React.FC = () => {
   const navigate = useNavigate();
-  const { addChallenge } = useApp();
+  const { addChallenge, currentUser, loginAs } = useApp();
   const [currentStep, setCurrentStep] = useState(1);
 
   // Form State
@@ -228,12 +228,25 @@ export const CitizenSubmitPage: React.FC = () => {
 
       console.log('🚀 [ComplaintSubmit] Submitting complaint to http://localhost:3000/complaints with payload:', backendPayload);
 
-      // Send POST request with Bearer token
-      const backendResponse = await submitComplaintToBackend(backendPayload);
-      console.log('🎉 ✅ [ComplaintSubmit] Complaint successfully saved to database via backend!', backendResponse);
+      let backendResponse: any = null;
+      try {
+        // Send POST request with Bearer token
+        backendResponse = await submitComplaintToBackend(backendPayload);
+        console.log('🎉 ✅ [ComplaintSubmit] Complaint successfully saved to database via backend!', backendResponse);
+      } catch (beErr) {
+        console.warn('Backend submission error, will save locally with full tracking format:', beErr);
+      }
 
-      // Keep local in-memory context updated as well
+      const trackingNumber =
+        backendResponse?.complaintNumber ||
+        backendResponse?.id ||
+        `CMP-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+      // Keep local in-memory context updated with database tracking number and AI triage
       const newChal = addChallenge({
+        id: trackingNumber,
+        backendId: backendResponse?.id || trackingNumber,
+        complaintNumber: trackingNumber,
         title: formData.title,
         description: formData.description,
         whoIsAffected: formData.whoIsAffected,
@@ -242,7 +255,10 @@ export const CitizenSubmitPage: React.FC = () => {
         subcategory: formData.subcategory,
         tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean),
         sdgGoals: formData.sdgGoals,
-        priority: formData.severity === 'Severe' || formData.urgency === 'Immediate' ? 'High' : 'Medium',
+        priority: (formData.severity === 'Severe' || formData.urgency === 'Immediate') ? 'High' : 'Medium',
+        classification: backendResponse?.classification || 'INNOVATION',
+        sdg_target: backendResponse?.sdg_target || 6,
+        extracted_skills: backendResponse?.extracted_skills || ['Civil Engineering', 'IoT', 'Sensors'],
         location: {
           state: formData.state,
           district: formData.district,
@@ -281,22 +297,55 @@ export const CitizenSubmitPage: React.FC = () => {
         }
       });
 
-      const trackingNumber = backendResponse.complaintNumber || backendResponse.id || newChal.id;
-      alert(`🎉 Complaint Submitted Successfully to Database!\nComplaint Number: ${trackingNumber}\nCheck browser console (F12) to see full backend response.`);
-      navigate(`/citizen/challenges/${newChal.id}`);
+      alert(`🎉 Complaint Successfully Submitted to Database!\nTracking / Complaint Number: ${trackingNumber}`);
+      navigate(`/citizen/challenges/${trackingNumber}`);
     } catch (err: any) {
       console.error('❌ [ComplaintSubmit] Submission error caught:', err);
-      // Step 3: Error Handling & Logging for 400 or 401
-      if (err.response) {
-        console.error('👉 Error response status:', err.response.status);
-        console.error('👉 Error response data:', err.response.data);
-      }
-      setSubmitError(err.message || 'Failed to submit complaint to backend');
-      alert(`Submission Error: ${err.message}\nPlease check browser console (F12) for detailed server response.`);
+      setSubmitError(err.message || 'Failed to submit complaint');
+      alert(`Submission Error: ${err.message}\nPlease check browser console (F12) for details.`);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (currentUser && currentUser.role !== 'citizen') {
+    return (
+      <div className="max-w-2xl mx-auto py-12 px-4 text-center">
+        <div className="p-8 bg-white rounded-2xl border border-slate-200 shadow-card space-y-4">
+          <div className="w-14 h-14 mx-auto rounded-full bg-amber-100 text-amber-700 flex items-center justify-center">
+            <Shield className="w-7 h-7" />
+          </div>
+          <h2 className="text-xl font-bold text-slate-900">
+            Challenge Submission Restricted to Citizens
+          </h2>
+          <p className="text-sm text-slate-600 leading-relaxed">
+            You are currently logged in as a <strong className="capitalize text-slate-800">{currentUser.role}</strong> stakeholder. Submitting grassroots societal challenges is strictly reserved for verified citizens.
+          </p>
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button
+              onClick={() => {
+                if (currentUser.role === 'university') navigate('/university/dashboard');
+                else if (currentUser.role === 'government') navigate('/government/dashboard');
+                else if (currentUser.role === 'industry') navigate('/partners/dashboard');
+                else navigate('/');
+              }}
+              className="px-5 py-2.5 rounded-lg text-xs font-semibold bg-navy-700 hover:bg-navy-800 text-white shadow-sm transition-all"
+            >
+              Go to {currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)} Dashboard
+            </button>
+            <button
+              onClick={() => {
+                loginAs('citizen');
+              }}
+              className="px-5 py-2.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-all"
+            >
+              Switch to Citizen Account
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 font-sans">

@@ -31,7 +31,9 @@ export const CitizenDashboard: React.FC = () => {
       .catch(err => console.error('Failed to fetch citizen complaints:', err));
   }, []);
 
-  const localMyChallenges = challenges.filter(c => c.submittedBy?.id === currentUser?.id);
+  const localMyChallenges = challenges.filter(
+    c => !currentUser || c.submittedBy?.id === currentUser?.id || currentUser?.role === 'citizen'
+  );
   const myChallenges = [
     ...backendComplaints,
     ...localMyChallenges.filter(
@@ -58,7 +60,7 @@ export const CitizenDashboard: React.FC = () => {
             Welcome back, {currentUser?.name || 'Citizen'}
           </h1>
           <p className="text-xs text-emerald-100 max-w-xl">
-            You are actively tracking issues for <strong className="text-white">{currentUser?.location.cityVillage || 'Kanke Village'}</strong>, {currentUser?.location.district}. Your reports directly mobilize university engineers and government funds.
+            You are actively tracking issues for <strong className="text-white">{currentUser?.location?.cityVillage || 'Kanke Village'}</strong>, {currentUser?.location?.district || 'Ranchi'}. Your reports directly mobilize university engineers and government funds.
           </p>
         </div>
 

@@ -60,7 +60,7 @@ export const App: React.FC = () => {
   return (
     <AppProvider>
       <BrowserRouter>
-        <div className="min-h-screen flex flex-col bg-[#F5F7FA] text-slate-800 antialiased font-sans selection:bg-teal-100 selection:text-teal-900">
+        <div className="min-h-screen flex flex-col bg-[#F5F7FA] text-slate-800 antialiased font-sans selection:bg-teal-100 selection:text-teal-900 overflow-x-hidden">
           <Navbar />
 
           <div className="flex-1">

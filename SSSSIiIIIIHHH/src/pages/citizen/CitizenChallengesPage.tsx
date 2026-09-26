@@ -29,7 +29,9 @@ export const CitizenChallengesPage: React.FC = () => {
     };
   }, []);
 
-  const myChallenges = challenges.filter(c => c.submittedBy.id === currentUser?.id);
+  const myChallenges = challenges.filter(
+    c => !currentUser || c.submittedBy?.id === currentUser?.id || currentUser?.role === 'citizen'
+  );
 
   // Merge live backend complaints with local mock data (avoid duplicates)
   const combinedList = [

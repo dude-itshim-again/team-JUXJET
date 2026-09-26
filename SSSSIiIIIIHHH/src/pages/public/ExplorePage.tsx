@@ -10,7 +10,7 @@ import { formatDate } from '../../utils/helpers';
 import { fetchAllComplaints, mapBackendComplaintToChallenge } from '../../api';
 
 export const ExplorePage: React.FC = () => {
-  const { challenges, toggleUpvote } = useApp();
+  const { challenges, toggleUpvote, currentUser } = useApp();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -85,13 +85,15 @@ export const ExplorePage: React.FC = () => {
             <MapPin className="w-4 h-4" />
             <span>{showMap ? 'Hide Map' : 'Show Map'}</span>
           </button>
-          <Link
-            to="/citizen/submit"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-colors"
-          >
-            <PlusCircle className="w-4 h-4" />
-            <span>Submit Challenge</span>
-          </Link>
+          {(!currentUser || currentUser.role === 'citizen') && (
+            <Link
+              to="/citizen/submit"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-colors"
+            >
+              <PlusCircle className="w-4 h-4" />
+              <span>Submit Challenge</span>
+            </Link>
+          )}
         </div>
       </div>
 

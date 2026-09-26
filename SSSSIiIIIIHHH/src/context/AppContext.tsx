@@ -34,7 +34,17 @@ interface AppContextType {
   loginWithPhone: (
     phone: string,
     role: Role,
-    profile?: { name: string; age: number; email: string; district: string; cityVillage: string }
+    profile?: {
+      name?: string;
+      age?: number;
+      email?: string;
+      district?: string;
+      cityVillage?: string;
+      institutionName?: string;
+      departmentName?: string;
+      organizationName?: string;
+      designation?: string;
+    }
   ) => void;
   logout: () => void;
 
@@ -204,23 +214,42 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const loginWithPhone = (
     phone: string,
     role: Role,
-    profile?: { name: string; age: number; email: string; district: string; cityVillage: string }
+    profile?: {
+      name?: string;
+      age?: number;
+      email?: string;
+      district?: string;
+      cityVillage?: string;
+      institutionName?: string;
+      departmentName?: string;
+      organizationName?: string;
+      designation?: string;
+    }
   ) => {
-    const baseUser = INITIAL_USERS[role];
+    const baseUser = INITIAL_USERS[role] || INITIAL_USERS.citizen;
     const user: User = {
       ...baseUser,
-      name: profile?.name || baseUser.name,
-      age: profile?.age || baseUser.age,
+      id: profile?.name ? `USR-${role.toUpperCase().slice(0, 3)}-${Date.now().toString().slice(-4)}` : baseUser.id,
+      role,
+      name: profile?.name?.trim() || baseUser.name,
+      age: profile?.age !== undefined ? profile.age : baseUser.age,
       phone: phone || baseUser.phone,
-      email: profile?.email || baseUser.email,
+      email: profile?.email?.trim() || baseUser.email,
+      institutionName: profile?.institutionName?.trim() || baseUser.institutionName,
+      departmentName: profile?.departmentName?.trim() || baseUser.departmentName,
+      organizationName: profile?.organizationName?.trim() || baseUser.organizationName,
+      designation: profile?.designation?.trim() || baseUser.designation,
       location: {
         ...baseUser.location,
-        district: profile?.district || baseUser.location.district,
-        cityVillage: profile?.cityVillage || baseUser.location.cityVillage
+        district: profile?.district?.trim() || baseUser.location.district,
+        cityVillage: profile?.cityVillage?.trim() || baseUser.location.cityVillage
       },
-      joinedAt: new Date().toISOString().split('T')[0]
+      verified: true,
+      joinedAt: baseUser.joinedAt || new Date().toISOString().split('T')[0]
     };
     setCurrentUser(user);
+    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+    localStorage.setItem(STORAGE_KEYS.SCOPE, 'jharkhand-v1');
   };
 
   const logout = () => {
@@ -244,9 +273,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Challenge Logic
   const addChallenge = (data: Partial<Challenge>): Challenge => {
-    const id = `CHAL-2026-${String(challenges.length + 1).padStart(3, '0')}`;
+    const id = data.id || data.complaintNumber || `CHAL-2026-${String(challenges.length + 1).padStart(3, '0')}`;
     const newChallenge: Challenge = {
+      ...data,
       id,
+      backendId: data.backendId || id,
+      complaintNumber: data.complaintNumber || id,
       title: data.title || 'Untitled Community Challenge',
       description: data.description || '',
       whoIsAffected: data.whoIsAffected || 'Local residents',
@@ -256,7 +288,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       tags: data.tags || ['Community', 'CivicTech'],
       sdgGoals: data.sdgGoals || [6],
       priority: data.priority || 'Medium',
-      status: 'Submitted',
+      status: data.status || 'Submitted',
       location: data.location || {
         state: 'Jharkhand',
         district: 'Ranchi',

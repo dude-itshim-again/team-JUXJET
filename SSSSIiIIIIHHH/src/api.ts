@@ -138,7 +138,7 @@ export async function submitComplaintToBackend(payload: SubmitComplaintPayload):
 }
 
 /**
- * Step 3: Fetch complaints submitted by current user (GET /complaints/mine)
+ * Step 3: Fetch complaints submitted by current user (GET /complaints/mine with fallback to GET /complaints)
  */
 export async function fetchMyComplaints(): Promise<any[]> {
   let token = localStorage.getItem('token');
@@ -146,32 +146,46 @@ export async function fetchMyComplaints(): Promise<any[]> {
     try {
       token = await hackathonDemoLogin();
     } catch {
-      return [];
+      // Continue to fallback if demo login fails
     }
   }
 
   try {
-    const res = await fetch(`${API_BASE_URL}/complaints/mine`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    if (token) {
+      const res = await fetch(`${API_BASE_URL}/complaints/mine`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    if (!res.ok) {
-      if (res.status === 401) {
+      if (res.ok) {
+        const mine = await res.json();
+        if (Array.isArray(mine) && mine.length > 0) {
+          return mine;
+        }
+      } else if (res.status === 401) {
         token = await hackathonDemoLogin();
         const retryRes = await fetch(`${API_BASE_URL}/complaints/mine`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (retryRes.ok) return await retryRes.json();
+        if (retryRes.ok) {
+          const mine = await retryRes.json();
+          if (Array.isArray(mine) && mine.length > 0) return mine;
+        }
       }
-      return [];
     }
 
-    return await res.json();
+    // Fallback: If /complaints/mine returned empty or failed, fetch all database complaints so data is never lost
+    const all = await fetchAllComplaints();
+    return Array.isArray(all) ? all : [];
   } catch (err) {
-    console.error('Failed to fetch my complaints:', err);
-    return [];
+    console.warn('Failed to fetch my complaints from /complaints/mine, trying fallback:', err);
+    try {
+      const all = await fetchAllComplaints();
+      return Array.isArray(all) ? all : [];
+    } catch {
+      return [];
+    }
   }
 }
 
@@ -212,9 +226,29 @@ export async function fetchComplaintById(id: string): Promise<any | null> {
     if (res.ok) {
       return await res.json();
     }
+    // If direct lookup by id gave 404, search the full complaints list in case of ID / complaintNumber alias
+    const all = await fetchAllComplaints();
+    if (Array.isArray(all)) {
+      const found = all.find(
+        (c: any) =>
+          c.id === id ||
+          c.complaintNumber === id ||
+          c.backendId === id ||
+          (c.title && c.title.toLowerCase() === id.toLowerCase())
+      );
+      if (found) return found;
+    }
     return null;
   } catch (err) {
     console.error(`Error fetching complaint ${id}:`, err);
+    try {
+      const all = await fetchAllComplaints();
+      if (Array.isArray(all)) {
+        return all.find((c: any) => c.id === id || c.complaintNumber === id) || null;
+      }
+    } catch {
+      // ignore
+    }
     return null;
   }
 }

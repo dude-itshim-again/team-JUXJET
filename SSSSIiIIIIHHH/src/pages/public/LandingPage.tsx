@@ -21,7 +21,7 @@ import { StatusBadge, PriorityBadge } from '../../components/common/StatusBadge'
 import { CATEGORIES } from '../../utils/constants';
 
 export const LandingPage: React.FC = () => {
-  const { challenges, projects, institutions, industryPartners } = useApp();
+  const { challenges, projects, institutions, industryPartners, currentUser } = useApp();
 
   const totalBeneficiaries = challenges.reduce((acc, c) => acc + (c.impact?.affectedPeopleCount || 0), 0);
   const validatedCount = challenges.filter(c => c.status !== 'Draft' && c.status !== 'Submitted').length;
@@ -54,13 +54,15 @@ export const LandingPage: React.FC = () => {
           </p>
 
           <div className="pt-4 flex flex-wrap justify-center items-center gap-3 sm:gap-4">
-            <Link
-              to="/citizen/submit"
-              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-sm bg-saffron-500 hover:bg-saffron-600 text-slate-950 shadow-elevated transition-all transform hover:-translate-y-0.5"
-            >
-              <PlusCircle className="w-4 h-4" />
-              <span>Submit a Challenge</span>
-            </Link>
+            {(!currentUser || currentUser.role === 'citizen') && (
+              <Link
+                to="/citizen/submit"
+                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-sm bg-saffron-500 hover:bg-saffron-600 text-slate-950 shadow-elevated transition-all transform hover:-translate-y-0.5"
+              >
+                <PlusCircle className="w-4 h-4" />
+                <span>Submit a Challenge</span>
+              </Link>
+            )}
 
             <Link
               to="/explore"

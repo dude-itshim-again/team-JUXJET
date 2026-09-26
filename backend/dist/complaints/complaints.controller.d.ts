@@ -14,47 +14,47 @@ export declare class ComplaintsController {
     getMatches(id: string): Promise<import("../matching/matching.service").ComplaintMatchingResponse>;
     getOpportunities(): Promise<({
         department: {
-            id: string;
             name: string;
+            id: string;
             jurisdiction: string;
         };
         citizen: {
-            id: string;
             phone: string;
             name: string;
+            id: string;
         };
         assignedUniversity: {
+            name: string;
             id: string;
             createdAt: Date;
-            name: string;
             location: string;
             capabilities: string;
         };
         industryPartner: {
+            name: string;
             id: string;
             createdAt: Date;
-            name: string;
             location: string | null;
             sector: string | null;
         };
     } & {
         id: string;
-        complaintNumber: string;
+        createdAt: Date;
         title: string;
         description: string;
         category: string;
-        status: string;
         priority: string;
         latitude: number | null;
         longitude: number | null;
+        departmentId: string | null;
+        status: string;
+        complaintNumber: string;
         fundingStatus: string | null;
         classification: string | null;
         sdg_target: number | null;
         extracted_skills: string | null;
-        createdAt: Date;
         updatedAt: Date;
         citizenId: string | null;
-        departmentId: string | null;
         assignedUniversityId: string | null;
         industryPartnerId: string | null;
     })[]>;
@@ -74,9 +74,9 @@ export declare class ComplaintsController {
         complaint: any;
         historyRecord: {
             changedBy: {
-                id: string;
                 name: string;
                 role: string;
+                id: string;
             };
         } & {
             id: string;

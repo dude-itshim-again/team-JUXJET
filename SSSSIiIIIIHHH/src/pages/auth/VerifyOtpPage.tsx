@@ -102,7 +102,7 @@ export const VerifyOtpPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-130px)] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-50 to-[#EEF2F6]">
+    <div className="min-h-screen flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-50 to-[#EEF2F6]">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
           <div className="w-12 h-12 rounded-xl bg-teal-700 flex items-center justify-center text-white shadow-md">
@@ -119,6 +119,41 @@ export const VerifyOtpPage: React.FC = () => {
 
       <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow-card sm:rounded-2xl sm:px-8 border border-slate-200">
+          {/* Role & Identity Context Card */}
+          <div className="mb-4 p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="w-2 h-2 rounded-full bg-teal-600"></span>
+                <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
+                  {role === 'university' && 'University R&D Portal'}
+                  {role === 'government' && 'Government Administration Portal'}
+                  {role === 'industry' && 'Industry & CSR Portal'}
+                  {role === 'citizen' && 'Citizen Portal'}
+                </span>
+              </div>
+              <p className="text-xs font-bold text-slate-900 truncate">
+                {profile?.name || (role === 'university' ? 'Prof. Sunita Rao' : role === 'government' ? 'Rajesh Kumar, IAS' : role === 'industry' ? 'Ananya Sen' : 'Ramesh Verma')}
+              </p>
+              <p className="text-[11px] text-slate-600 truncate mt-0.5">
+                {role === 'university' && (profile?.institutionName || 'BIT Mesra')}
+                {role === 'government' && (profile?.departmentName || 'Drinking Water & Sanitation')}
+                {role === 'industry' && (profile?.organizationName || 'Tata Community Initiatives Trust')}
+                {role === 'citizen' && `${profile?.cityVillage || 'Kanke Village'}, ${profile?.district || 'Ranchi'}`}
+              </p>
+            </div>
+            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase shrink-0 border ${
+              role === 'university'
+                ? 'bg-purple-50 text-purple-800 border-purple-200'
+                : role === 'government'
+                ? 'bg-blue-50 text-blue-800 border-blue-200'
+                : role === 'industry'
+                ? 'bg-amber-50 text-amber-800 border-amber-200'
+                : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+            }`}>
+              {role}
+            </span>
+          </div>
+
           {/* Phone Display & Edit */}
           <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-200 mb-6">
             <div>

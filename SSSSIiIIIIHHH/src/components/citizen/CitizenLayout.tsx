@@ -11,39 +11,41 @@ export const CitizenLayout: React.FC = () => {
   return (
     <div className="min-h-[calc(100vh-68px)] flex flex-col bg-[#F5F7FA]">
       {/* Sub-Header / Citizen Workspace Bar */}
-      <div className="bg-white border-b border-slate-200 px-4 sm:px-8 py-2.5 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="md:hidden p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
-            aria-label="Toggle sidebar"
-          >
-            {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-            <span className="text-xs font-bold text-slate-900 tracking-wide uppercase">
-              Citizen Workspace
-            </span>
-            <span className="hidden sm:inline text-xs text-slate-400">|</span>
-            <span className="hidden sm:inline text-xs text-slate-600">
-              Societal Problem Reporting & Tracking
-            </span>
+      <div className="bg-white border-b border-slate-200">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="md:hidden p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
+              aria-label="Toggle sidebar"
+            >
+              {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <span className="text-xs font-bold text-slate-900 tracking-wide uppercase">
+                Citizen Workspace
+              </span>
+              <span className="hidden sm:inline text-xs text-slate-400">|</span>
+              <span className="hidden sm:inline text-xs text-slate-600">
+                Societal Problem Reporting & Tracking
+              </span>
+            </div>
           </div>
-        </div>
 
-        <div className="flex items-center gap-2">
-          <Link
-            to="/citizen/submit"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-colors"
-          >
-            <PlusCircle className="w-3.5 h-3.5" />
-            <span>New Challenge</span>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/citizen/submit"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-colors"
+            >
+              <PlusCircle className="w-3.5 h-3.5" />
+              <span>New Challenge</span>
+            </Link>
+          </div>
         </div>
       </div>
 
-      <div className="flex-1 flex max-w-7xl w-full mx-auto">
+      <div className="flex-1 flex w-full">
         {/* Desktop Sidebar */}
         <div className="hidden md:block shrink-0">
           <CitizenSidebar />
