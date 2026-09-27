@@ -23,7 +23,7 @@ model User {
 
 model Complaint {
   id                   String   @id @default(uuid())
-  complaintNumber      String   @unique
+  complaintNumber      String   @unique @default(uuid())
   citizenId            String?
   title                String
   description          String

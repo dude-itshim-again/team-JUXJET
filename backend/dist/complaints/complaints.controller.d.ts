@@ -1,5 +1,4 @@
 import { ComplaintsService } from './complaints.service';
-import { CreateComplaintDto } from './dto/create-complaint.dto';
 import { UpdateComplaintStatusDto } from './dto/update-complaint-status.dto';
 import { type AuthenticatedUser } from '../auth/decorators/current-user.decorator';
 import { ComplaintStatus } from '../common/enums';
@@ -8,7 +7,7 @@ export declare class ComplaintsController {
     private readonly complaintsService;
     private readonly matchingService;
     constructor(complaintsService: ComplaintsService, matchingService: MatchingService);
-    create(user: AuthenticatedUser, dto: CreateComplaintDto): Promise<any>;
+    create(user: AuthenticatedUser, body: any): Promise<any>;
     findMine(user: AuthenticatedUser): Promise<any[]>;
     findAll(status?: ComplaintStatus, category?: string, departmentId?: string): Promise<any[]>;
     getMatches(id: string): Promise<import("../matching/matching.service").ComplaintMatchingResponse>;
@@ -20,8 +19,10 @@ export declare class ComplaintsController {
         };
         citizen: {
             phone: string;
-            name: string;
+            name: string | null;
+            role: string;
             id: string;
+            createdAt: Date;
         };
         assignedUniversity: {
             name: string;
@@ -47,6 +48,7 @@ export declare class ComplaintsController {
         latitude: number | null;
         longitude: number | null;
         departmentId: string | null;
+        citizenId: string | null;
         status: string;
         complaintNumber: string;
         fundingStatus: string | null;
@@ -54,7 +56,6 @@ export declare class ComplaintsController {
         sdg_target: number | null;
         extracted_skills: string | null;
         updatedAt: Date;
-        citizenId: string | null;
         assignedUniversityId: string | null;
         industryPartnerId: string | null;
     })[]>;
@@ -80,11 +81,11 @@ export declare class ComplaintsController {
             };
         } & {
             id: string;
+            previousStatus: string;
+            newStatus: string;
             timestamp: Date;
             complaintId: string;
             changedById: string | null;
-            previousStatus: string;
-            newStatus: string;
         };
     }>;
 }

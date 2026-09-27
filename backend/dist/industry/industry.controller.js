@@ -36,9 +36,7 @@ let IndustryController = class IndustryController {
             include: {
                 assignedUniversity: true,
                 industryPartner: true,
-                citizen: {
-                    select: { id: true, name: true, phone: true },
-                },
+                citizen: true,
                 department: true,
             },
             orderBy: { updatedAt: 'desc' },
@@ -56,9 +54,7 @@ let IndustryController = class IndustryController {
             include: {
                 assignedUniversity: true,
                 industryPartner: true,
-                citizen: {
-                    select: { id: true, name: true, phone: true },
-                },
+                citizen: true,
                 department: true,
             },
             orderBy: { updatedAt: 'desc' },
@@ -81,9 +77,7 @@ let IndustryController = class IndustryController {
             include: {
                 assignedUniversity: true,
                 industryPartner: true,
-                citizen: {
-                    select: { id: true, name: true, phone: true },
-                },
+                citizen: true,
                 department: true,
             },
             orderBy: { updatedAt: 'desc' },
@@ -99,9 +93,7 @@ let IndustryController = class IndustryController {
             include: {
                 assignedUniversity: true,
                 industryPartner: true,
-                citizen: {
-                    select: { id: true, name: true, phone: true },
-                },
+                citizen: true,
                 department: true,
             },
             orderBy: { updatedAt: 'desc' },

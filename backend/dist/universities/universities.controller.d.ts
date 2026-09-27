@@ -15,8 +15,10 @@ export declare class UniversitiesController {
     getArchives(id: string): Promise<({
         citizen: {
             phone: string;
-            name: string;
+            name: string | null;
+            role: string;
             id: string;
+            createdAt: Date;
         };
         assignedUniversity: {
             name: string;
@@ -42,6 +44,7 @@ export declare class UniversitiesController {
         latitude: number | null;
         longitude: number | null;
         departmentId: string | null;
+        citizenId: string | null;
         status: string;
         complaintNumber: string;
         fundingStatus: string | null;
@@ -49,7 +52,6 @@ export declare class UniversitiesController {
         sdg_target: number | null;
         extracted_skills: string | null;
         updatedAt: Date;
-        citizenId: string | null;
         assignedUniversityId: string | null;
         industryPartnerId: string | null;
     })[]>;

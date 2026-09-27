@@ -33,9 +33,7 @@ export class IndustryController {
       include: {
         assignedUniversity: true,
         industryPartner: true,
-        citizen: {
-          select: { id: true, name: true, phone: true },
-        },
+        citizen: true,
         department: true,
       },
       orderBy: { updatedAt: 'desc' },
@@ -60,9 +58,7 @@ export class IndustryController {
       include: {
         assignedUniversity: true,
         industryPartner: true,
-        citizen: {
-          select: { id: true, name: true, phone: true },
-        },
+        citizen: true,
         department: true,
       },
       orderBy: { updatedAt: 'desc' },
@@ -93,9 +89,7 @@ export class IndustryController {
       include: {
         assignedUniversity: true,
         industryPartner: true,
-        citizen: {
-          select: { id: true, name: true, phone: true },
-        },
+        citizen: true,
         department: true,
       },
       orderBy: { updatedAt: 'desc' },
@@ -118,9 +112,7 @@ export class IndustryController {
       include: {
         assignedUniversity: true,
         industryPartner: true,
-        citizen: {
-          select: { id: true, name: true, phone: true },
-        },
+        citizen: true,
         department: true,
       },
       orderBy: { updatedAt: 'desc' },

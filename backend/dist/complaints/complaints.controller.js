@@ -15,21 +15,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ComplaintsController = void 0;
 const common_1 = require("@nestjs/common");
 const complaints_service_1 = require("./complaints.service");
-const create_complaint_dto_1 = require("./dto/create-complaint.dto");
 const update_complaint_status_dto_1 = require("./dto/update-complaint-status.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const roles_guard_1 = require("../auth/guards/roles.guard");
 const roles_decorator_1 = require("../auth/decorators/roles.decorator");
 const current_user_decorator_1 = require("../auth/decorators/current-user.decorator");
 const enums_1 = require("../common/enums");
+const optional_jwt_auth_guard_1 = require("../auth/guards/optional-jwt-auth.guard");
 const matching_service_1 = require("../matching/matching.service");
 let ComplaintsController = class ComplaintsController {
     constructor(complaintsService, matchingService) {
         this.complaintsService = complaintsService;
         this.matchingService = matchingService;
     }
-    async create(user, dto) {
-        return this.complaintsService.create(user.id, dto);
+    async create(user, body) {
+        const activeCitizenId = body?.citizenId || user?.id;
+        return this.complaintsService.create({
+            ...body,
+            citizenId: activeCitizenId,
+        });
     }
     async findMine(user) {
         return this.complaintsService.findMine(user.id);
@@ -79,12 +83,11 @@ let ComplaintsController = class ComplaintsController {
 exports.ComplaintsController = ComplaintsController;
 __decorate([
     (0, common_1.Post)(),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)(enums_1.Role.CITIZEN),
+    (0, common_1.UseGuards)(optional_jwt_auth_guard_1.OptionalJwtAuthGuard),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, create_complaint_dto_1.CreateComplaintDto]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], ComplaintsController.prototype, "create", null);
 __decorate([

@@ -1,5 +1,4 @@
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateComplaintDto } from './dto/create-complaint.dto';
 import { UpdateComplaintStatusDto } from './dto/update-complaint-status.dto';
 import { ComplaintStatus } from '../common/enums';
 export declare class ComplaintsService {
@@ -7,7 +6,7 @@ export declare class ComplaintsService {
     constructor(prisma: PrismaService);
     private generateComplaintNumber;
     private formatComplaintResponse;
-    create(citizenId: string, dto: CreateComplaintDto): Promise<any>;
+    create(bodyOrCitizenId: any, maybeDto?: any): Promise<any>;
     findMine(citizenId: string): Promise<any[]>;
     findAll(query?: {
         status?: ComplaintStatus;
@@ -26,11 +25,11 @@ export declare class ComplaintsService {
             };
         } & {
             id: string;
+            previousStatus: string;
+            newStatus: string;
             timestamp: Date;
             complaintId: string;
             changedById: string | null;
-            previousStatus: string;
-            newStatus: string;
         };
     }>;
     acceptComplaint(complaintId: string, universityId: string, changedById?: string): Promise<{
@@ -51,8 +50,10 @@ export declare class ComplaintsService {
         };
         citizen: {
             phone: string;
-            name: string;
+            name: string | null;
+            role: string;
             id: string;
+            createdAt: Date;
         };
         assignedUniversity: {
             name: string;
@@ -78,6 +79,7 @@ export declare class ComplaintsService {
         latitude: number | null;
         longitude: number | null;
         departmentId: string | null;
+        citizenId: string | null;
         status: string;
         complaintNumber: string;
         fundingStatus: string | null;
@@ -85,7 +87,6 @@ export declare class ComplaintsService {
         sdg_target: number | null;
         extracted_skills: string | null;
         updatedAt: Date;
-        citizenId: string | null;
         assignedUniversityId: string | null;
         industryPartnerId: string | null;
     })[]>;

@@ -23,6 +23,7 @@ export declare class DepartmentsService {
             latitude: number | null;
             longitude: number | null;
             departmentId: string | null;
+            citizenId: string | null;
             status: string;
             complaintNumber: string;
             fundingStatus: string | null;
@@ -30,7 +31,6 @@ export declare class DepartmentsService {
             sdg_target: number | null;
             extracted_skills: string | null;
             updatedAt: Date;
-            citizenId: string | null;
             assignedUniversityId: string | null;
             industryPartnerId: string | null;
         }[];
@@ -62,6 +62,7 @@ export declare class DepartmentsService {
             latitude: number | null;
             longitude: number | null;
             departmentId: string | null;
+            citizenId: string | null;
             status: string;
             complaintNumber: string;
             fundingStatus: string | null;
@@ -69,7 +70,6 @@ export declare class DepartmentsService {
             sdg_target: number | null;
             extracted_skills: string | null;
             updatedAt: Date;
-            citizenId: string | null;
             assignedUniversityId: string | null;
             industryPartnerId: string | null;
         };

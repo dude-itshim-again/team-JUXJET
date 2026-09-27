@@ -9,4 +9,7 @@ export declare class CreateComplaintDto {
     latitude?: number;
     longitude?: number;
     departmentId?: string;
+    citizenId?: string;
+    status?: string;
+    complaintNumber?: string;
 }

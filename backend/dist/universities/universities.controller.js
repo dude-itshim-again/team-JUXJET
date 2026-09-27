@@ -46,9 +46,7 @@ let UniversitiesController = class UniversitiesController {
                 ],
             },
             include: {
-                citizen: {
-                    select: { id: true, name: true, phone: true },
-                },
+                citizen: true,
                 assignedUniversity: true,
                 industryPartner: true,
             },

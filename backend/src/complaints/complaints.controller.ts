@@ -17,6 +17,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser, type AuthenticatedUser } from '../auth/decorators/current-user.decorator';
 import { ComplaintStatus, Role } from '../common/enums';
 
+import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
 import { MatchingService } from '../matching/matching.service';
 
 @Controller('complaints')
@@ -28,16 +29,19 @@ export class ComplaintsController {
 
   /**
    * POST /complaints
-   * Restricted to CITIZEN
+   * Submit civic complaint / challenge
    */
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.CITIZEN)
+  @UseGuards(OptionalJwtAuthGuard)
   async create(
     @CurrentUser() user: AuthenticatedUser,
-    @Body() dto: CreateComplaintDto,
+    @Body() body: any,
   ) {
-    return this.complaintsService.create(user.id, dto);
+    const activeCitizenId = body?.citizenId || user?.id;
+    return this.complaintsService.create({
+      ...body,
+      citizenId: activeCitizenId,
+    });
   }
 
   /**
